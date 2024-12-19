@@ -7,3 +7,14 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='employer_login_customuser_set',
+        blank=True,
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='employer_login_customuser_set',
+        blank=True,
+    )

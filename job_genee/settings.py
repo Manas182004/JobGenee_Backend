@@ -40,8 +40,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_yasg',
     'corsheaders',
-    'login',
+    'homeLogin',
+    'homeRegistration',
     'ForgotPass',
+    'employerEnquiry',
+    'employerLogin',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -68,7 +71,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'job_genee.urls'
 
-AUTH_USER_MODEL = 'login.User'
+AUTH_USER_MODEL = 'homeRegistration.CustomUser'
 
 TEMPLATES = [
     {
@@ -98,8 +101,12 @@ AUTHENTICATION_BACKENDS = (
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite for simplicity
-        'NAME': BASE_DIR / 'db.sqlite3',         # Path to your SQLite database file
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'jobGenee_db',      # Your database name
+        'USER': 'root',            # Default MySQL user is 'root' unless you created another
+        'PASSWORD': '',            # Add your MySQL password, if any
+        'HOST': '127.0.0.1',       # Localhost is correct for XAMPP
+        'PORT': '3306',  
     }
 }
 
@@ -180,40 +187,40 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        },
-    },
-    'microsoft': {
-        'SCOPE': [
-            'User.Read',
-            'User.ReadBasic.All',
-        ],
-        'AUTH_PARAMS': {
-            'response_type': 'code',
-        },
-    },
-    'linkedin': {
-        'SCOPE': [
-            'r_liteprofile',
-            'r_emailaddress',
-        ],
-        'PROFILE_FIELDS': [
-            'id',
-            'first-name',
-            'last-name',
-            'email-address',
-            'picture-url',
-            'public-profile-url',
-        ],
-    },
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': [
+#             'profile',
+#             'email',
+#         ],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         },
+#     },
+#     'microsoft': {
+#         'SCOPE': [
+#             'User.Read',
+#             'User.ReadBasic.All',
+#         ],
+#         'AUTH_PARAMS': {
+#             'response_type': 'code',
+#         },
+#     },
+#     'linkedin': {
+#         'SCOPE': [
+#             'r_liteprofile',
+#             'r_emailaddress',
+#         ],
+#         'PROFILE_FIELDS': [
+#             'id',
+#             'first-name',
+#             'last-name',
+#             'email-address',
+#             'picture-url',
+#             'public-profile-url',
+#         ],
+#     },
+# }
 
 REST_USE_JWT = True
 ACCOUNT_EMAIL_REQUIRED = True
