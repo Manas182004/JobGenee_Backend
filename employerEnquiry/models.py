@@ -1,6 +1,16 @@
-from django.db import models
+#employerEnquiry/models.py
 
-class Enquiry(models.Model):
+from django.db import models
+from django.conf import settings
+
+
+class employerEnquiry(models.Model):
+    
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Reference the CustomUser model from homeRegistration
+        on_delete=models.CASCADE,
+        related_name='employer_enquiry',
+     )
     name = models.CharField(max_length=255)
     contact_number = models.CharField(max_length=15)
     email = models.EmailField()
@@ -9,7 +19,6 @@ class Enquiry(models.Model):
     role = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey('homeRegistration.CustomUser', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

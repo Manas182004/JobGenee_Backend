@@ -1,3 +1,5 @@
+#job_genee/settings.py
+
 """
 Django settings for job_ginee project.
 
@@ -28,6 +30,12 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
 
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # Your frontend's URL
+#     "https://your-production-domain.com",  # Your production domain
+# ]
+
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -42,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'homeLogin',
     'homeRegistration',
+    'phonenumber_field',  # Required for PhoneNumberField
     'ForgotPass',
     'employerEnquiry',
     'employerLogin',
@@ -70,8 +79,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'job_genee.urls'
-
-AUTH_USER_MODEL = 'homeRegistration.CustomUser'
 
 TEMPLATES = [
     {
@@ -135,8 +142,16 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -168,10 +183,11 @@ CORS_ALLOW_HEADERS = [
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-#EMAIL_HOST_USER = 'EMAIL'
-# EMAIL_HOST_PASSWORD = 'PASSWORD'
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'manasharma767@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'hhzl xole kamk hshy'  # Replace with your Gmail app password
+
 
 CACHES = {
     "default": {
@@ -226,6 +242,8 @@ REST_USE_JWT = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+# AUTH_USER_MODEL = 'homeRegistration.CustomUser'
 
 # Add SimpleJWT settings
 from datetime import timedelta

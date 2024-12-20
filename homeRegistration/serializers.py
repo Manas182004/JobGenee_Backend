@@ -1,34 +1,47 @@
-from rest_framework import serializers
-from django.contrib.auth.password_validation import validate_password
-from django.core.validators import RegexValidator
-from .models import CustomUser
+#homeRegistration/serializers.py
 
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from .models import UserProfile
+from django.core.validators import RegexValidator
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['mobile_number', 'work_status', 'current_city', 'resume', 'otp', 'otp_verified']
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True,
-        validators=[validate_password],
-        style={'input_type': 'password'},
-    )
-    confirm_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    confirm_password = serializers.CharField(write_only=True)
+    profile = UserProfileSerializer()
 
     class Meta:
-        model = CustomUser
-        fields = ['username', 'email', 'password', 'confirm_password', 'mobile_number', 'resume', 'current_city']
+        model = User
+        fields = ['full_name', 'email', 'password', 'confirm_password', 'profile']
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
 
     def validate(self, data):
+        # Validate Password
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
+
+        # Validate Email Format
+        if not data['email']:
+            raise serializers.ValidationError({"email": "Email is required."})
         return data
 
     def create(self, validated_data):
-        validated_data.pop('confirm_password')
-        user = CustomUser.objects.create_user(
-            username=validated_data['username'],
+        profile_data = validated_data.pop('profile')
+        user = User.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'],
-            mobile_number=validated_data['mobile_number'],
-            resume=validated_data.get('resume'),
-            current_city=validated_data.get('current_city'),
+        )
+        UserProfile.objects.create(
+            user=user,
+            mobile_number=profile_data['mobile_number'],
+            work_status=profile_data['work_status'],
+            current_city=profile_data.get('current_city', None),
+            resume=profile_data.get('resume', None),
         )
         return user
