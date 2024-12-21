@@ -1,8 +1,6 @@
-#employerEnquiry/urls.py
-
 from django.urls import path
-from .views import EnquiryView
+from .views import submit_enquiry
 
 urlpatterns = [
-    path('enquiry/', EnquiryView.as_view(), name='enquiry'),
+    path('enquiry/', submit_enquiry, name='submit-enquiry'),
 ]

@@ -109,7 +109,7 @@ AUTHENTICATION_BACKENDS = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'jobGenee_db',      # Your database name
+        'NAME': 'jobgenee_db',      # Your database name
         'USER': 'root',            # Default MySQL user is 'root' unless you created another
         'PASSWORD': '',            # Add your MySQL password, if any
         'HOST': '127.0.0.1',       # Localhost is correct for XAMPP
