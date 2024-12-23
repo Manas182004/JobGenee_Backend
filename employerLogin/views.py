@@ -1,34 +1,62 @@
-#employerLogin/views.py
-
+import random
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
-from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, TokenSerializer, CustomUserSerializer
+from django.core.cache import cache
 
-class LoginView(APIView):
-    permission_classes = [AllowAny]
-
+class SendOtpView(APIView):
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data
-            refresh = RefreshToken.for_user(user)
-            tokens = {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }
-            user_data = CustomUserSerializer(user).data
-            return Response({"tokens": tokens, "user": user_data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        email = request.data.get('email')
 
-class LogoutView(APIView):
-    def post(self, request):
+        if not email:
+            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if user exists
         try:
-            refresh_token = request.data.get("refresh")
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response({"message": "Logout successful"}, status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Generate a random 6-digit OTP
+        otp = random.randint(100000, 999999)
+
+        # Cache the OTP with a timeout of 5 minutes
+        cache.set(f'otp_{email}', otp, timeout=300)
+
+        # Send OTP via email
+        send_mail(
+            subject="Your OTP for Login",
+            message=f"Your OTP is {otp}. It is valid for 5 minutes.",
+            from_email="manasharma767@gmail.com",
+            recipient_list=[email],
+        )
+        
+        return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
+
+class VerifyOtpView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        otp = request.data.get('otp')
+
+        if not email or not otp:
+            return Response({"error": "Email and OTP are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Retrieve OTP from cache
+        cached_otp = cache.get(f'otp_{email}')
+
+        if not cached_otp:
+            return Response({"error": "OTP expired or invalid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if str(cached_otp) != str(otp):
+            return Response({"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # OTP is valid; authenticate user
+        user = User.objects.get(email=email)
+        # You can generate a token here if needed (e.g., JWT or session token)
+        
+        # Delete OTP from cache after successful verification
+        cache.delete(f'otp_{email}')
+
+        return Response({"message": "Login successful"}, status=status.HTTP_200_OK)

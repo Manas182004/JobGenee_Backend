@@ -1,6 +1,4 @@
 #job_genee/urls.py
-
-
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
@@ -34,9 +32,11 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('homeLogin/', include("homeLogin.urls")),
     path('homeRegistration/', include("homeRegistration.urls")),
-    #path('employerLogin', include("employerLogin.urls")),
+    path('employerLogin/', include("employerLogin.urls")),
     path('employerEnquiry/', include("employerEnquiry.urls")),
     path('forgetResetPass/', include('forgetResetPass.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('employer/', include('empregistration.urls')),
+
 ]

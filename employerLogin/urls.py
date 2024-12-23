@@ -1,9 +1,7 @@
-#employerLogin/urls.py
-
 from django.urls import path
-from .views import LoginView, LogoutView
+from .views import SendOtpView, VerifyOtpView
 
 urlpatterns = [
-    path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path('send-otp1/', SendOtpView.as_view(), name='send-otp'),
+    path('verify-otp2/', VerifyOtpView.as_view(), name='verify-otp'),
 ]
