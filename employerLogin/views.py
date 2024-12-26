@@ -8,14 +8,14 @@ from django.core.cache import cache
 
 class SendOtpView(APIView):
     def post(self, request):
-        email = request.data.get('email')
+        empRemail = request.data.get('empRemail')
 
-        if not email:
+        if not empRemail:
             return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
         
         # Check if user exists
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(empRemail=empRemail)
         except User.DoesNotExist:
             return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
         
@@ -23,28 +23,28 @@ class SendOtpView(APIView):
         otp = random.randint(100000, 999999)
 
         # Cache the OTP with a timeout of 5 minutes
-        cache.set(f'otp_{email}', otp, timeout=300)
+        cache.set(f'otp_{empRemail}', otp, timeout=300)
 
         # Send OTP via email
         send_mail(
             subject="Your OTP for Login",
             message=f"Your OTP is {otp}. It is valid for 5 minutes.",
             from_email="manasharma767@gmail.com",
-            recipient_list=[email],
+            recipient_list=[empRemail],
         )
         
         return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
 
 class VerifyOtpView(APIView):
     def post(self, request):
-        email = request.data.get('email')
+        empRemail = request.data.get('empRemail')
         otp = request.data.get('otp')
 
-        if not email or not otp:
+        if not empRemail or not otp:
             return Response({"error": "Email and OTP are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Retrieve OTP from cache
-        cached_otp = cache.get(f'otp_{email}')
+        cached_otp = cache.get(f'otp_{empRemail}')
 
         if not cached_otp:
             return Response({"error": "OTP expired or invalid"}, status=status.HTTP_400_BAD_REQUEST)
@@ -53,10 +53,10 @@ class VerifyOtpView(APIView):
             return Response({"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
 
         # OTP is valid; authenticate user
-        user = User.objects.get(email=email)
+        user = User.objects.get(empRemail=empRemail)
         # You can generate a token here if needed (e.g., JWT or session token)
         
         # Delete OTP from cache after successful verification
-        cache.delete(f'otp_{email}')
+        cache.delete(f'otp_{empRemail}')
 
         return Response({"message": "Login successful"}, status=status.HTTP_200_OK)

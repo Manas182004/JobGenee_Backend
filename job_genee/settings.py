@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'rest_framework.authtoken',
     'empregistration',
+    'customUser',
+    'jobPosting',
 
 ]
 
@@ -70,6 +72,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'job_genee.urls'
+
+AUTH_USER_MODEL = 'customUser.CustomUser'
+
 
 TEMPLATES = [
     {
@@ -141,7 +146,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 
 # Default primary key field type
@@ -151,7 +174,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+       ),
+    'DEFAULT_PAGINATION_CLASS': 
+        'rest_framework.pagination.PageNumberPagination',
+        'PAGE_SIZE': 10,
+    
 }
 
 SWAGGER_SETTINGS = {

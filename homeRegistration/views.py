@@ -1,78 +1,36 @@
-from rest_framework.views import APIView
+from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer
-from .models import UserProfile
-from .utils import generate_otp, send_otp_email
+from rest_framework.views import APIView
+from .models import HomeRegistration
+from .serializers import HomeRegistrationSerializer
+import random
 
-
-class RegisterView(APIView):
+class HomeRegistrationViewSet(viewsets.ModelViewSet):
     """
-    Handles user registration and sends an OTP for verification.
+    Handles registration CRUD operations.
     """
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            # Save user and profile
-            user = serializer.save()
-            profile = user.profile
+    queryset = HomeRegistration.objects.all()
+    serializer_class = HomeRegistrationSerializer
 
-            # Generate and send OTP
-            otp = generate_otp()
-            profile.otp = otp
-            profile.save()
-
-            try:
-                send_otp_email(user.email, otp)
-            except Exception as e:
-                # Handle email sending failure
-                return Response(
-                    {"error": "Failed to send OTP. Please try again later.", "details": str(e)},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-
-            # Generate JWT tokens
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                "message": "Registration successful. OTP sent to your email.",
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-            }, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        # Associate the logged-in user and generate OTP
+        otp = f"{random.randint(100000, 999999)}"  # Generate a 6-digit OTP
+        serializer.save(user=self.request.user, otp=otp)
+        # Send OTP (Placeholder)
+        print(f"OTP for {self.request.user.homeEmail}: {otp}")
 
 
-class VerifyOTPView(APIView):
+class VerifyOtpView(APIView):
     """
-    Verifies the OTP sent to the user's email.
+    Verifies the OTP for a home registration.
     """
-    def post(self, request):
-        email = request.data.get('email')
-        otp = request.data.get('otp')
-
-        # Validate input
-        if not email or not otp:
-            return Response(
-                {"error": "Email and OTP are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
+    def post(self, request, *args, **kwargs):
+        otp = request.data.get("otp")
         try:
-            # Retrieve the profile by email
-            profile = UserProfile.objects.get(user__email=email)
-
-            # Check if already verified
-            if profile.otp_verified:
-                return Response({"message": "Account is already verified."}, status=status.HTTP_200_OK)
-
-            # Validate OTP
-            if profile.otp == otp:
-                profile.otp_verified = True
-                profile.save()
-                return Response({"message": "OTP verified successfully."}, status=status.HTTP_200_OK)
-
+            registration = HomeRegistration.objects.get(user=request.user, otp=otp)
+            registration.is_verified = True
+            registration.otp = None  # Clear OTP after verification
+            registration.save()
+            return Response({"message": "Registration verified successfully."})
+        except HomeRegistration.DoesNotExist:
             return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
-
-        except UserProfile.DoesNotExist:
-            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)

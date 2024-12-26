@@ -1,5 +1,3 @@
-#homeLogin/views.py
-
 from datetime import timedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,7 +14,7 @@ class LoginView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             
-             # Handle "Remember Me"
+            # Handle "Remember Me"
             remember_me = request.data.get('remember_me', False)
 
             # Generate tokens
