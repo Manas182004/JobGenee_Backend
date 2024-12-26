@@ -1,23 +1,25 @@
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import HomeRegistration
 from .serializers import HomeRegistrationSerializer
-import random
+from .utils import generate_otp, send_otp_email
 
-class HomeRegistrationViewSet(viewsets.ModelViewSet):
-    """
-    Handles registration CRUD operations.
-    """
-    queryset = HomeRegistration.objects.all()
-    serializer_class = HomeRegistrationSerializer
 
-    def perform_create(self, serializer):
-        # Associate the logged-in user and generate OTP
-        otp = f"{random.randint(100000, 999999)}"  # Generate a 6-digit OTP
-        serializer.save(user=self.request.user, otp=otp)
-        # Send OTP (Placeholder)
-        print(f"OTP for {self.request.user.homeEmail}: {otp}")
+class HomeRegistrationView(APIView):
+    """
+    Handles registration.
+    """
+    def post(self, request, *args, **kwargs):
+        serializer = HomeRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            # Generate OTP and associate it with the registration
+            otp = generate_otp()
+            serializer.save(user=request.user, otp=otp)
+            # Send OTP via email
+            send_otp_email(request.user.homeEmail, otp)
+            return Response({"message": "Registration successful. OTP sent."}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyOtpView(APIView):
@@ -31,6 +33,6 @@ class VerifyOtpView(APIView):
             registration.is_verified = True
             registration.otp = None  # Clear OTP after verification
             registration.save()
-            return Response({"message": "Registration verified successfully."})
+            return Response({"message": "Registration verified successfully."}, status=status.HTTP_200_OK)
         except HomeRegistration.DoesNotExist:
             return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)

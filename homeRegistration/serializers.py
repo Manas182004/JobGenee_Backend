@@ -1,5 +1,8 @@
+#homeRegistration/serializers.py
+
 from rest_framework import serializers
 from .models import HomeRegistration
+
 
 class HomeRegistrationSerializer(serializers.ModelSerializer):
     class Meta:

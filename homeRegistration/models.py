@@ -1,3 +1,5 @@
+#homeRegistration/models.py
+
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -17,3 +19,6 @@ class HomeRegistration(models.Model):
 
     def __str__(self):
         return f"Registration for {self.user.homeFull_name}"
+    
+    class Meta:
+        ordering = ['id']  # Default ordering by ID
