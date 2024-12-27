@@ -1,24 +1,34 @@
 #homeRegistration/models.py
 
+from django.contrib.auth.models import User
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator, FileExtensionValidator
+from phonenumber_field.modelfields import PhoneNumberField
+import uuid
 
-User = get_user_model()
+class UserProfile(models.Model):
+    WORK_STATUS_CHOICES = [
+        ('fresher', "I'm a Fresher"),
+        ('experienced', "I'm Experienced"),
+    ]
 
-class HomeRegistration(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="homeRegistration"
-    )
-    homeCurrent_city = models.CharField(max_length=100)
-    homeResume = models.FileField(upload_to="resumes/")
-    homeWork_status = models.CharField(
-        max_length=20, choices=[("fresher", "Fresher"), ("experienced", "Experienced")]
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    full_name = models.CharField(max_length=100, null=True, blank=True)
+    mobile_number = PhoneNumberField(null=False, blank=False, unique=True)
     otp = models.CharField(max_length=6, null=True, blank=True)
-    is_verified = models.BooleanField(default=False)
+    otp_verified = models.BooleanField(default=False)
+    work_status = models.CharField(max_length=20, choices=WORK_STATUS_CHOICES)
+    current_city = models.CharField(max_length=100, null=True, blank=True)
+    resume = models.FileField(
+        upload_to='resumes/',
+        null=True,
+        blank=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf', 'doc', 'docx']),
+        ]
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Registration for {self.user.homeFull_name}"
-    
-    class Meta:
-        ordering = ['id']  # Default ordering by ID
+        return self.user.username
+

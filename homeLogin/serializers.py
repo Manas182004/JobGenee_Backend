@@ -1,29 +1,25 @@
+#homeLogin/serializers.py
+
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
 class LoginSerializer(serializers.Serializer):
-    homeEmail = serializers.EmailField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        homeEmail = data.get('homeEmail')
+        email = data.get('email')
         password = data.get('password')
 
-        if not homeEmail or not password:
-            raise serializers.ValidationError(
-                {"detail": "Both email and password are required.", "code": "missing_credentials"}
-            )
+        if not email or not password:
+            raise serializers.ValidationError("Both email and password are required.")
 
         # Authenticate the user
-        user = authenticate(username=homeEmail, password=password)
+        user = authenticate(username=email, password=password)
         if user is None:
-            raise serializers.ValidationError(
-                {"detail": "Invalid credentials.", "code": "invalid_credentials"}
-            )
+            raise serializers.ValidationError("Invalid email or password.")
         if not user.is_active:
-            raise serializers.ValidationError(
-                {"detail": "This account is inactive. Contact support.", "code": "inactive_account"}
-            )
+            raise serializers.ValidationError("This account is inactive.")
 
         data['user'] = user
         return data

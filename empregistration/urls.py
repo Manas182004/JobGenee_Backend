@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import EmployerRegistrationView
+from .views import EmployerRegistrationView, EmployerPortalView
 
 urlpatterns = [
-    path('employer/register/', EmployerRegistrationView.as_view(), name='employer-register'),
+    path('register/', EmployerRegistrationView.as_view(), name='employer-register'),
+    path('portal/', EmployerPortalView.as_view(), name='employer-portal'),
 ]

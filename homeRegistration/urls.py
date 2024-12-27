@@ -1,7 +1,13 @@
+#homeRegistration/urls.py
+
 from django.urls import path
-from .views import HomeRegistrationView, VerifyOtpView
+from .views import RegisterView, VerifyOTPView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
-    path("register/", HomeRegistrationView.as_view(), name="register"),
-    path("verify-otp/", VerifyOtpView.as_view(), name="verify-otp"),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
+    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
+
