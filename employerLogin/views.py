@@ -1,5 +1,3 @@
-#employerLogin/views.py
-
 import random
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -7,8 +5,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.cache import cache
-#from .models import empUserProfile  # Import UserProfile to check roles
-
 
 class SendOtpView(APIView):
     def post(self, request):
@@ -17,11 +13,9 @@ class SendOtpView(APIView):
         if not email:
             return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Check if user exists and has the employer role
+        # Check if user exists
         try:
             user = User.objects.get(email=email)
-            if not hasattr(user, 'login_profile') or user.login_profile.role != 'employer':
-                return Response({"error": "Only employers are allowed to log in"}, status=status.HTTP_403_FORBIDDEN)
         except User.DoesNotExist:
             return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
         
@@ -41,6 +35,12 @@ class SendOtpView(APIView):
         
         return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
 
+from django.contrib.auth.models import User
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.core.cache import cache
+from empregistration.models import empUserProfile  # Import your profile model
 
 class VerifyOtpView(APIView):
     def post(self, request):
@@ -59,16 +59,30 @@ class VerifyOtpView(APIView):
         if str(cached_otp) != str(otp):
             return Response({"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # OTP is valid; authenticate user
+        # Authenticate user
         try:
             user = User.objects.get(email=email)
-            if not hasattr(user, 'login_profile') or user.login_profile.role != 'employer':
-                return Response({"error": "Only employers are allowed to log in"}, status=status.HTTP_403_FORBIDDEN)
         except User.DoesNotExist:
-            return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check the user's role from the EmpUserProfile table
+        try:
+            profile = empUserProfile.objects.get(user=user)
+        except empUserProfile.DoesNotExist:
+            return Response({"error": "User profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if profile.role != "employer":
+            return Response({"error": "Access restricted to employers only"}, status=status.HTTP_403_FORBIDDEN)
 
         # Delete OTP from cache after successful verification
         cache.delete(f'otp_{email}')
 
-        # If needed, generate a token for authentication (e.g., JWT or session token)
-        return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
+        return Response({
+            "message": "Login successful",
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "username": user.username,
+                "role": profile.role,
+            }
+        }, status=status.HTTP_200_OK)
