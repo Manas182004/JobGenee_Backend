@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.cache import cache
+from empregistration.models import empUserProfile  # Import your profile model
 
 class SendOtpView(APIView):
     def post(self, request):
@@ -34,13 +35,6 @@ class SendOtpView(APIView):
         )
         
         return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
-
-from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from django.core.cache import cache
-from empregistration.models import empUserProfile  # Import your profile model
 
 class VerifyOtpView(APIView):
     def post(self, request):
