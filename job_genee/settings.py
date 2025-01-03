@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'jobSearch',
     'django_filters',
     'django_redis',
+    'booleanSearch',
 
 ]
 

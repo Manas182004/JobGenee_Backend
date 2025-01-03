@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.cache import cache
 from empregistration.models import empUserProfile  # Import your profile model
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class SendOtpView(APIView):
     def post(self, request):
@@ -61,11 +62,11 @@ class VerifyOtpView(APIView):
 
         # Check the user's role from the EmpUserProfile table
         try:
-            profile = empUserProfile.objects.get(user=user)
+            emp_profile = empUserProfile.objects.get(user=user)
         except empUserProfile.DoesNotExist:
             return Response({"error": "User profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if profile.role != "employer":
+        if emp_profile.role != "employer":
             return Response({"error": "Access restricted to employers only"}, status=status.HTTP_403_FORBIDDEN)
 
         # Delete OTP from cache after successful verification
@@ -77,6 +78,6 @@ class VerifyOtpView(APIView):
                 "id": user.id,
                 "email": user.email,
                 "username": user.username,
-                "role": profile.role,
+                "role": emp_profile.role,
             }
         }, status=status.HTTP_200_OK)

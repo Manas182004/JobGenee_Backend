@@ -1,3 +1,4 @@
+#PROJECT
 #job_genee/urls.py
 from django.conf import settings
 from django.contrib import admin
@@ -40,5 +41,6 @@ urlpatterns = [
     path('employer/', include('empregistration.urls')),
     path('feedback/', include('Feedback.urls')), 
     path('jobpost/', include('jobpost.urls')),
+    path('booleanSearch/', include('booleanSearch.urls')),
 
 ]
