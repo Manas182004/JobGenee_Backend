@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_redis',
     'booleanSearch',
+    'dashboard',
 
 ]
 

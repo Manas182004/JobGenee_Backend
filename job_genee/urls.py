@@ -42,5 +42,7 @@ urlpatterns = [
     path('feedback/', include('Feedback.urls')), 
     path('jobpost/', include('jobpost.urls')),
     path('booleanSearch/', include('booleanSearch.urls')),
+    path('dashboard/', include('dashboard.urls')),
+
 
 ]

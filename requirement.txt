@@ -28,3 +28,4 @@ urllib3==2.2.3
 PyMySQL==1.1.1
 django-filter==24.3
 spacy==3.8.3
+en-core-web-sm==3.8.0
