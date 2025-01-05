@@ -1,22 +1,48 @@
-#empregistration/serializers.py
+# empregistration/serializers.py
 
-from django.contrib.auth.models import User
+
 from rest_framework import serializers
-from .models import empUserProfile  # Import empUserProfile model
+from django.contrib.auth.models import User
+from .models import OTP
+import re
 
-class EmployerRegistrationSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=6)
+    mobile_number = serializers.CharField(write_only=True)
+    company_name = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
-        extra_kwargs = {
-            'password': {'write_only': True},  # Hide password in responses
-        }
+        fields = ['email', 'password', 'first_name', 'mobile_number', 'company_name']
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email is already registered.")
+        return value
+
+    def validate_mobile_number(self, value):
+        if not re.match(r'^\d{10}$', value):
+            raise serializers.ValidationError("Enter a valid 10-digit mobile number.")
+        return value
 
     def create(self, validated_data):
-        # Set the username as the email
-        validated_data['username'] = validated_data['email']
-        user = User.objects.create_user(**validated_data)
-        # Assign the "employer" role
-        user.emp_profile.role = 'employer'
-        user.emp_profile.save()
+        password = validated_data.pop('password')
+        user = User.objects.create(
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+        )
+        user.set_password(password)
+        user.save()
         return user
+
+class OTPSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+
+    class Meta:
+        model = OTP
+        fields = ['email']
+
+    def validate_email(self, value):
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email is not registered.")
+        return value

@@ -1,7 +1,8 @@
+# empregistration urls.py
 from django.urls import path
-from .views import EmployerRegistrationView, EmployerPortalView
+from .views import SendOtpView, RegisterView
 
 urlpatterns = [
-    path('register/', EmployerRegistrationView.as_view(), name='employer-register'),
-    path('portal/', EmployerPortalView.as_view(), name='employer-portal'),
+    path('empsend-otp/', SendOtpView.as_view(), name='send_otp'),
+    path('empregister/', RegisterView.as_view(), name='register'),
 ]

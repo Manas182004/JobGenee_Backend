@@ -1,21 +1,26 @@
-#empregistration/models.py
+# empregistration/models.py
 
-from django.contrib.auth.models import User
+
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils.timezone import now, timedelta
 
 class empUserProfile(models.Model):
-    ROLE_CHOICES = [
-        ('employer', 'Employer'),
-        ('employee', 'Employee'),  # You can add more roles if needed
-    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='emp_profile')
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='employee')
+    company_name = models.CharField(max_length=255)
+    mobile_number = models.CharField(max_length=15)
 
-# Signal to automatically create a profile when a user is created
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+    def __str__(self):
+        return f"{self.user.first_name} - {self.company_name}"
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        empUserProfile.objects.create(user=instance)
+class OTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='otps')
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_valid(self):
+        expiration_time = timedelta(minutes=10)
+        return now() - self.created_at <= expiration_time
+
+    def __str__(self):
+        return f"OTP for {self.user.email}: {self.otp}"
