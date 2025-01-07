@@ -1,26 +1,26 @@
 # empregistration/models.py
 
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+from django.core.validators import RegexValidator, FileExtensionValidator
+from phonenumber_field.modelfields import PhoneNumberField
+import uuid
 from django.utils.timezone import now, timedelta
+from django.utils import timezone
+
 
 class empUserProfile(models.Model):
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='emp_profile')
+    full_name = models.CharField(max_length=100, null=True, blank=True)
     company_name = models.CharField(max_length=255)
-    mobile_number = models.CharField(max_length=15)
+    mobile_number = PhoneNumberField(null=False, blank=False, unique=True)
+    otp = models.CharField(max_length=6, null=True, blank=True)
+    otp_verified = models.BooleanField(default=False)
+    
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.user.first_name} - {self.company_name}"
+        return self.user.username
 
-class OTP(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='otps')
-    otp = models.CharField(max_length=6)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def is_valid(self):
-        expiration_time = timedelta(minutes=10)
-        return now() - self.created_at <= expiration_time
-
-    def __str__(self):
-        return f"OTP for {self.user.email}: {self.otp}"

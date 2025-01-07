@@ -3,46 +3,34 @@
 
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import OTP
-import re
+from empregistration.models import empUserProfile
 
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=6)
-    mobile_number = serializers.CharField(write_only=True)
-    company_name = serializers.CharField(write_only=True)
+class empUserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = empUserProfile
+        fields = ['full_name', 'mobile_number', 'company_name']
+
+class empRegisterSerializer(serializers.ModelSerializer):
+    emp_profile = empUserProfileSerializer()
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'first_name', 'mobile_number', 'company_name']
-
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email is already registered.")
-        return value
-
-    def validate_mobile_number(self, value):
-        if not re.match(r'^\d{10}$', value):
-            raise serializers.ValidationError("Enter a valid 10-digit mobile number.")
-        return value
+        fields = ['email', 'password', 'emp_profile']
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User.objects.create(
+        profile_data = validated_data.pop('emp_profile')
+        user = User.objects.create_user(
+            username=validated_data['email'],  # Use email as username
             email=validated_data['email'],
-            first_name=validated_data['first_name'],
+            password=validated_data['password']
         )
-        user.set_password(password)
-        user.save()
+        empUserProfile.objects.create(
+            user=user,
+            full_name=profile_data['full_name'],
+            mobile_number=profile_data['mobile_number'],
+            company_name=profile_data['company_name'],
+        )
         return user
-
-class OTPSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField()
-
-    class Meta:
-        model = OTP
-        fields = ['email']
-
-    def validate_email(self, value):
-        if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email is not registered.")
-        return value
