@@ -1,0 +1,25 @@
+
+
+// http://127.0.0.1:8000/empregistration/register/
+
+// {
+//   "email": "manashivam@gmail.com",
+//   "password": "Manas@11",
+//   "emp_profile": {
+//     "full_name": "Manas Raj",
+//     "company_name": "LTS",
+//     "mobile_number": "+916204446936"
+//   }
+// }
+
+// http://127.0.0.1:8000/empregistration/verify-otp/
+
+// {
+//     "email": "manashivam@gmail.com",
+//     "otp": "123456"
+//   }
+
+  
+//   http://127.0.0.1:8000/empregistration/refresh/
+
+//   http://127.0.0.1:8000/empregistration/obtain/

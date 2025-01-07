@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'django_redis',
     'booleanSearch',
     'dashboard',
+    'contact',
 
 ]
 

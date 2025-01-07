@@ -44,6 +44,7 @@ urlpatterns = [
     path('jobpost/', include('jobpost.urls')),
     path('booleanSearch/', include('booleanSearch.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('contact/', include('contact.urls')),
 
 
 ]
