@@ -26,8 +26,9 @@ def extract_resume_data(request):
     }
     return Response(extracted_data)
 
+
 router = DefaultRouter()
-router.register(r'basic-information', BasicInformationViewSet)
+router.register(r'basic-information', BasicInformationViewSet, basename='basicinformation')
 router.register(r'certifications', CertificationViewSet)
 router.register(r'education', EducationViewSet)
 router.register(r'experience', ExperienceViewSet)

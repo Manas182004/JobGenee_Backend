@@ -1,0 +1,15 @@
+
+basicInformation
+{
+    "id": 1,
+    "linkedin": "https://in.linkedin.com/",
+    "other_links": "https://www.youtube.com/",
+    "github": "https://github.com/",
+    "age": 21,
+    "experience": "6.00",
+    "phone": "6204446936",
+    "ctc": "400000.00",
+    "location": "Bhubaneswar",
+    "email": "manasharma767@gmail.com",
+    "resume_file": null
+}

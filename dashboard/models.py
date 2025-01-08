@@ -5,10 +5,16 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class BasicInformation(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone = models.CharField(max_length=15)
+    linkedin = models.URLField(blank=True, null=True)
+    other_links = models.TextField(blank=True, null=True)
+    github = models.URLField(blank=True, null=True)
+    age = models.PositiveIntegerField(blank=True, null=True)
+    experience = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    ctc = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    resume_file = models.FileField(upload_to='resumes/', blank=True, null=True)
 
 class Certification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
