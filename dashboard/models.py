@@ -31,11 +31,12 @@ class Education(models.Model):
     end_date = models.DateField()
 
 class Experience(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    company = models.CharField(max_length=100)
-    position = models.CharField(max_length=100)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    job_title = models.CharField(max_length=255, blank=True, null=True)
+    job_role = models.TextField(blank=True, null=True)
+    company = models.CharField(max_length=255, blank=True, null=True)
+    from_date = models.DateField()
+    to_date = models.DateField()
 
 class Language(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

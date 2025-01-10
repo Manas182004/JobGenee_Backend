@@ -24,7 +24,7 @@ class ExperienceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experience
         fields = '__all__'
-
+        
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
