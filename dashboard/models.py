@@ -31,7 +31,6 @@ class Education(models.Model):
     end_date = models.DateField()
 
 class Experience(models.Model):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     job_title = models.CharField(max_length=255, blank=True, null=True)
     job_role = models.TextField(blank=True, null=True)
     company = models.CharField(max_length=255, blank=True, null=True)
