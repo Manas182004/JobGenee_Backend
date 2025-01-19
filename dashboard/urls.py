@@ -40,17 +40,47 @@ def extract_resume_data(request):
 router = DefaultRouter()
 router.register(r'basic-information', BasicInformationViewSet, basename='basicinformation')
 router.register(r'certifications', CertificationViewSet)
-router.register(r'education', EducationViewSet)
+# router.register(r'education', EducationViewSet, basename='education')
+
+#experience
 experience_list = ExperienceViewSet.as_view({'get': 'list'})
 save_experience = ExperienceViewSet.as_view({'post': 'save_experience'})
-router.register(r'languages', LanguageViewSet)
+
+#education
+education = EducationViewSet.as_view({'get': 'list'})
+create_education = EducationViewSet.as_view({'post': 'create_education'})
+update_education = EducationViewSet.as_view({'put': 'update_education'})
+destroy_education = EducationViewSet.as_view({'delete': 'destroy_education'})
+
+#language
+list_language = LanguageViewSet.as_view({'get': 'list_language'})
+create_language = LanguageViewSet.as_view({'post': 'create_language'})
+update_language = LanguageViewSet.as_view({'put': 'update_language'})
+destroy_language = LanguageViewSet.as_view({'delete': 'destroy_language'})
+
+# router.register(r'languages', LanguageViewSet, basename='language')
 router.register(r'projects', ProjectViewSet)
 
 # Define urlpatterns
 urlpatterns = [
     path('', include(router.urls)),  # Include routes from DefaultRouter
+    
+    #experience
     path('experience/', experience_list, name='experience-list'),
-    path('experience/save/', save_experience, name='experience-save'),  
+    path('experience/save/', save_experience, name='experience-save'),
+    
+    #education
+    path('education/', education, name='list-education'),
+    path('education/create/', create_education, name='create-education'),  
+    path('education/update/', update_education, name='update-education'),  
+    path('education/destroy/', destroy_education, name='destroy-education'),
+    
+    #language
+    path('language/list/', list_language, name='list-language'),
+    path('language/create/', list_language, name='create-language'),
+    path('language/update/', list_language, name='update-language'),
+    path('language/destroy/', list_language, name='destroy-language'),
+
     path('resume/extract/', extract_resume_data, name='extract_resume_data'),
 ]
 
