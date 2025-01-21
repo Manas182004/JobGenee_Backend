@@ -113,13 +113,7 @@ class EducationViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['delete'], url_path='destroy-education')
     def destroy_education(self, request, pk=None):
-        data = {
-            "institution": request.data.get("institution"),
-            "degree": request.data.get("degree"),
-            "field_of_study": request.data.get("field_of_study"),
-            "start_date": request.data.get("start_date"),
-            "end_date": request.data.get("end_date"),
-        }
+        """DELETE: Remove an education record by primary key."""
         education = Education.objects.filter(pk=pk).first()
         if not education:
             return Response({"error": "Education not found."}, status=status.HTTP_404_NOT_FOUND)

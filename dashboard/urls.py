@@ -72,8 +72,8 @@ urlpatterns = [
     #education
     path('education/', education, name='list-education'),
     path('education/create/', create_education, name='create-education'),  
-    path('education/update/', update_education, name='update-education'),  
-    path('education/destroy/', destroy_education, name='destroy-education'),
+    path('education/update/<int:pk>/', update_education, name='update-education'),
+    path('education/destroy/<int:pk>/', destroy_education, name='destroy-education'),
     
     #language
     path('language/list/', list_language, name='list-language'),
