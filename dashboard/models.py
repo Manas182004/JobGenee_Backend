@@ -17,13 +17,12 @@ class BasicInformation(models.Model):
     resume_file = models.FileField(upload_to='resumes/', blank=True, null=True)
 
 class Certification(models.Model):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    issued_by = models.CharField(max_length=100)
-    date_issued = models.DateField()
+    link = models.URLField(blank=True, null=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField()
 
 class Education(models.Model):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     institution = models.CharField(max_length=100)
     degree = models.CharField(max_length=100)
     field_of_study = models.CharField(max_length=100)
@@ -38,13 +37,17 @@ class Experience(models.Model):
     to_date = models.DateField()
 
 class Language(models.Model):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    LANGUAGE_PROFICIENCY_CHOICES = [
+        ("Beginner", "Beginner"),
+        ("Intermediate", "Intermediate"),
+        ("Proficient", "Proficient"),
+        ("Fluent", "Fluent"),
+    ]
     language = models.CharField(max_length=50)
-    proficiency = models.CharField(max_length=50)
+    proficiency = models.CharField(max_length=20, choices=LANGUAGE_PROFICIENCY_CHOICES)
 
 class Project(models.Model):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    project_name = models.CharField(max_length=100)
     description = models.TextField()
-    start_date = models.DateField()
-    end_date = models.DateField()
+    timeline = models.PositiveIntegerField(blank=True, null=True)
+    project_link = models.URLField(blank=True, null=True)
