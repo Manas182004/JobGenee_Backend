@@ -1,12 +1,14 @@
+#jobpost/urls.py
+
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import SkillViewSet, LocationViewSet, JobPostingViewSet
+from .views import JobViewSet
 
+# Set up the DRF router
 router = DefaultRouter()
-router.register('skills', SkillViewSet)
-router.register('locations', LocationViewSet)
-router.register('job-postings', JobPostingViewSet)
+router.register(r'jobs', JobViewSet)
 
+# Define the app's urlpatterns
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(router.urls)),  # Include all router-generated URLs
 ]
