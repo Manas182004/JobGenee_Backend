@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'booleanSearch',
     'dashboard',
     'contact',
+    'empLanding',
 
 ]
 
