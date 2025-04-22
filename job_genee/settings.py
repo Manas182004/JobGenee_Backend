@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     'dashboard',
     'contact',
     'empLanding',
-
+    'hope',
 ]
 
 MIDDLEWARE = [

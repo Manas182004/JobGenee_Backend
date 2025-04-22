@@ -46,6 +46,5 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('contact/', include('contact.urls')),
     path('empLanding/', include('empLanding.urls')),
-
-
+    path('hope/', include('hope.urls')),
 ]

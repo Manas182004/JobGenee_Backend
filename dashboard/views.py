@@ -1,6 +1,5 @@
 # dashboard/views.py
 
-
 from .models import BasicInformation, Certification, Education, Experience, Language, Project
 from .serializers import (BasicInformationSerializer, CertificationSerializer,
                           EducationSerializer, ExperienceSerializer,
